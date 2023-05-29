@@ -21,34 +21,54 @@ List mkList(void) {
 }
 
 void clearList(List* s) {
-    // TODO Implement me!
-    NOT_IMPLEMENTED;
-    UNUSED(s);
+
+    ListItem* current = s->head;
+    ListItem* next;
+
+    while (current != NULL) {
+        next = current->next;
+        free(current);
+        current = next;
+    }
+
+    s->head = NULL;
+
 }
 
 void push(List* s, void* data) {
-    // TODO Implement me!
-    NOT_IMPLEMENTED;
-    UNUSED(s);
-    UNUSED(data);
+
+    ListItem* newitem=malloc(sizeof(ListItem));
+
+    newitem->data=data;
+    newitem->next=s->head;
+    s->head=newitem;
+
+
 }
 
 void* peek(List* s) {
-    // TODO Implement me!
-    NOT_IMPLEMENTED;
-    UNUSED(s);
+    ListItem* current = s->head;
+    if(s->head!= NULL)
+    {
+         return current->data;
+    }
 }
 
 void pop(List* s) {
-    // TODO Implement me!
-    NOT_IMPLEMENTED;
-    UNUSED(s);
+
+    if(s->head!= NULL)
+    {
+    ListItem* current = s->head;
+    ListItem* next;
+    
+        next= current->next;
+        s->head=next;
+        free(current);
+    }
 }
 
 char isEmpty(List* s) {
-    // TODO Implement me!
-    NOT_IMPLEMENTED;
-    UNUSED(s);
+return s->head == NULL;
 }
 
 ListIterator mkIterator(List* list) {
