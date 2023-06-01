@@ -36,9 +36,27 @@ PropFormula* mkUnaryFormula(FormulaKind kind, PropFormula* operand) {
 }
 
 void freeFormula(PropFormula* pf) {
-    // TODO Implement me!
-    NOT_IMPLEMENTED;
-    UNUSED(pf);
+    if (pf == NULL) {
+        return;
+    }
+
+    switch (pf->kind) {
+        case VAR:
+            // Variables are not freed, so no action needed
+            break;
+        case AND:
+        case OR:
+        case IMPLIES:
+        case EQUIV:
+            freeFormula(pf->data.operands[0]);  // Free left operand
+            freeFormula(pf->data.operands[1]);  // Free right operand
+            break;
+        case NOT:
+            freeFormula(pf->data.single_op);  // Free operand
+            break;
+        default:
+            break;
+    }
 }
 
 void prettyPrintFormula_impl(FILE* f, VarTable* vt, PropFormula* pf) {
