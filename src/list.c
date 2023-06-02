@@ -21,7 +21,6 @@ List mkList(void) {
 }
 
 void clearList(List* s) {
-
     ListItem* current = s->head;
     ListItem* next;
 
@@ -32,44 +31,37 @@ void clearList(List* s) {
     }
 
     s->head = NULL;
-
 }
 
 void push(List* s, void* data) {
+    ListItem* newitem = malloc(sizeof(ListItem));
 
-    ListItem* newitem=malloc(sizeof(ListItem));
-
-    newitem->data=data;
-    newitem->next=s->head;
-    s->head=newitem;
-
-
+    newitem->data = data;
+    newitem->next = s->head;
+    s->head = newitem;
 }
 
 void* peek(List* s) {
     ListItem* current = s->head;
-    if(s->head!= NULL)
-    {
-         return current->data;
+    if (s->head != NULL) {
+        return current->data;
+    } else {
+        return NULL;
     }
 }
 
 void pop(List* s) {
+    if (s->head != NULL) {
+        ListItem* current = s->head;
+        ListItem* next;
 
-    if(s->head!= NULL)
-    {
-    ListItem* current = s->head;
-    ListItem* next;
-    
-        next= current->next;
-        s->head=next;
+        next = current->next;
+        s->head = next;
         free(current);
     }
 }
 
-char isEmpty(List* s) {
-return s->head == NULL;
-}
+char isEmpty(List* s) { return s->head == NULL; }
 
 ListIterator mkIterator(List* list) {
     ListIterator res;
