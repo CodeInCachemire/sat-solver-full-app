@@ -33,7 +33,13 @@ FormulaKind toKind(const char* str) {
     } else if (strcmp(str, "<=>") == 0) {
         return EQUIV;
     } else {
-        for (int i = 0; i < strlen(str); i++) {
+        for (int i = 0; i < strlen(str); i++)
+        /*if (!((str[i] >= 'A' && str[i] <= 'Z') ||
+              (str[i] >= 'a' && str[i] <= 'z') ||
+              (str[i] >= '0' && str[i] <= '9'))) {
+            err("Not valid variable");*/
+
+        {
             if (!isalnum(*str))
                 err("Not valid variable");  // Not alphanumeric char
         }
@@ -51,17 +57,17 @@ int checkstack(List* s) {
 
 PropFormula* parseFormula(FILE* input, VarTable* vt) {
     List ls = mkList();  // Creating an empty list
-    /*
+
     if (input == NULL) {
         err("No tokens provided");
-    }*/
+    }
 
     char* key;  // Initializing my key token
 
     while ((key = nextToken(input)) != NULL) {  // check if token not null
-        if (key == NULL) {
+        /*if (key == NULL) {
             err("NO TOKEN PASSED");
-        }
+        }*/
 
         FormulaKind kindForm = toKind(key);  // Sending kind variable to
 
