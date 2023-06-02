@@ -40,7 +40,7 @@ FormulaKind toKind(const char* str) {
             err("Not valid variable");*/
 
         {
-            if (!isalnum(*str))
+            if (!isalnum(str[i]))
                 err("Not valid variable");  // Not alphanumeric char
         }
         return VAR;  // All characters are alphanumeric
@@ -63,12 +63,13 @@ PropFormula* parseFormula(FILE* input, VarTable* vt) {
     }
 
     char* key;  // Initializing my key token
+    int tokenCount = 0;
 
     while ((key = nextToken(input)) != NULL) {  // check if token not null
         /*if (key == NULL) {
             err("NO TOKEN PASSED");
         }*/
-
+        tokenCount++;
         FormulaKind kindForm = toKind(key);  // Sending kind variable to
 
         if (kindForm == VAR) {  // var case
@@ -113,6 +114,10 @@ PropFormula* parseFormula(FILE* input, VarTable* vt) {
         } else {
             err("Invalid token encountered");
         }
+    }
+
+    if (tokenCount == 0) {
+        err("No tokens passed");
     }
 
     PropFormula* result = (PropFormula*)peek(&ls);
