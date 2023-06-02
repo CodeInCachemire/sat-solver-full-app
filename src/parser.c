@@ -58,9 +58,9 @@ int checkstack(List* s) {
 PropFormula* parseFormula(FILE* input, VarTable* vt) {
     List ls = mkList();  // Creating an empty list
 
-    if (input == NULL) {
+    /*if (input == NULL) {
         err("No tokens provided");
-    }
+    }*/
 
     char* key;  // Initializing my key token
     int tokenCount = 0;
@@ -116,15 +116,17 @@ PropFormula* parseFormula(FILE* input, VarTable* vt) {
         }
     }
 
-    if (tokenCount == 0) {
+    if (tokenCount == 0) {  // stack
         err("No tokens passed");
     }
 
-    PropFormula* result = (PropFormula*)peek(&ls);
+    PropFormula* result = (PropFormula*)peek(&ls);  // give the formula to
+                                                    // result
     pop(&ls);
     if (ls.head == NULL) {
         return result;
     } else {
         err("Stack is not empty there are variables, parsing fail");
+        return NULL;
     }
 }
