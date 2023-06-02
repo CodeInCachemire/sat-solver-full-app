@@ -3,7 +3,9 @@
 #include <stdio.h>
 
 #include "err.h"
+#include "propformula.h"
 #include "util.h"
+#include "variables.h"
 
 /**
  * Inserts a clause with one literal into the CNF.
@@ -59,11 +61,58 @@ void addTernaryClause(VarTable* vt, CNF* cnf, Literal a, Literal b, Literal c) {
  * @return     the variable x, as described above
  */
 VarIndex addClauses(VarTable* vt, CNF* cnf, const PropFormula* pf) {
-    // TODO Implement me!
-    NOT_IMPLEMENTED;
-    UNUSED(vt);
-    UNUSED(cnf);
-    UNUSED(pf);
+    switch (pf->kind) {
+        case VAR: {
+            return pf->data.var;
+        }
+        case AND: {
+            VarIndex c = addClauses(vt, cnf, pf->data.operands[0]);
+            VarIndex d = addClauses(vt, cnf, pf->data.operands[1]);
+            VarIndex x = mkFreshVariable(vt);
+            addBinaryClause(vt, cnf, -x, c);
+            addBinaryClause(vt, cnf, -x, d);
+            addTernaryClause(vt, cnf, -c, -d, x);
+            return x;
+        }
+        case OR: {
+            VarIndex c = addClauses(vt, cnf, pf->data.operands[0]);
+            VarIndex d = addClauses(vt, cnf, pf->data.operands[1]);
+            VarIndex x = mkFreshVariable(vt);
+            addTernaryClause(vt, cnf, -x, c, d);
+            addBinaryClause(vt, cnf, -c, x);
+            addBinaryClause(vt, cnf, -d, x);
+            return x;
+        }
+        case IMPLIES: {
+            VarIndex c = addClauses(vt, cnf, pf->data.operands[0]);
+            VarIndex d = addClauses(vt, cnf, pf->data.operands[1]);
+            VarIndex x = mkFreshVariable(vt);
+            addTernaryClause(vt, cnf, -x, -c, d);
+            addBinaryClause(vt, cnf, c, x);
+            addBinaryClause(vt, cnf, -d, x);
+            return x;
+        }
+        case EQUIV: {
+            VarIndex a = addClauses(vt, cnf, pf->data.operands[0]);
+            VarIndex b = addClauses(vt, cnf, pf->data.operands[1]);
+            VarIndex x = mkFreshVariable(vt);
+            addTernaryClause(vt, cnf, -x, -a, b);
+            addTernaryClause(vt, cnf, -x, -b, a);
+            addTernaryClause(vt, cnf, x, -a, -b);
+            addTernaryClause(vt, cnf, x, a, b);
+            return x;
+        }
+        case NOT: {
+            VarIndex a = addClauses(vt, cnf, pf->data.single_op);
+            VarIndex x = mkFreshVariable(vt);
+            addBinaryClause(vt, cnf, -x, -a);
+            addBinaryClause(vt, cnf, a, x);
+            return x;
+        }
+        default:
+            err("Weird case man");
+            break;
+    }
 }
 
 CNF* getCNF(VarTable* vt, const PropFormula* f) {
