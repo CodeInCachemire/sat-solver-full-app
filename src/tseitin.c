@@ -64,53 +64,53 @@ VarIndex addClauses(VarTable* vt, CNF* cnf, const PropFormula* pf) {
     switch (pf->kind) {
         case VAR: {
             return pf->data.var;
-        }
+        }  // following the examples of formula given in the pdf
         case AND: {
             VarIndex c = addClauses(vt, cnf, pf->data.operands[0]);
             VarIndex d = addClauses(vt, cnf, pf->data.operands[1]);
-            VarIndex x = mkFreshVariable(vt);
-            addBinaryClause(vt, cnf, -x, c);
-            addBinaryClause(vt, cnf, -x, d);
-            addTernaryClause(vt, cnf, -c, -d, x);
+            VarIndex x = mkFreshVariable(vt);      // fresh variable
+            addBinaryClause(vt, cnf, -x, c);       // binary first
+            addBinaryClause(vt, cnf, -x, d);       // binary clause again
+            addTernaryClause(vt, cnf, -c, -d, x);  // Third is ternary
             return x;
         }
         case OR: {
             VarIndex c = addClauses(vt, cnf, pf->data.operands[0]);
             VarIndex d = addClauses(vt, cnf, pf->data.operands[1]);
-            VarIndex x = mkFreshVariable(vt);
-            addTernaryClause(vt, cnf, -x, c, d);
-            addBinaryClause(vt, cnf, -c, x);
-            addBinaryClause(vt, cnf, -d, x);
+            VarIndex x = mkFreshVariable(vt);     // Fresh Variable
+            addTernaryClause(vt, cnf, -x, c, d);  // first Ternary in Formula
+            addBinaryClause(vt, cnf, -c, x);      // Second Binary
+            addBinaryClause(vt, cnf, -d, x);      // Third Binary
             return x;
         }
         case IMPLIES: {
             VarIndex c = addClauses(vt, cnf, pf->data.operands[0]);
             VarIndex d = addClauses(vt, cnf, pf->data.operands[1]);
             VarIndex x = mkFreshVariable(vt);
-            addTernaryClause(vt, cnf, -x, -c, d);
-            addBinaryClause(vt, cnf, c, x);
-            addBinaryClause(vt, cnf, -d, x);
+            addTernaryClause(vt, cnf, -x, -c, d);  // First Ternary
+            addBinaryClause(vt, cnf, c, x);        // Secojd Binary
+            addBinaryClause(vt, cnf, -d, x);       // Third Binary
             return x;
         }
         case EQUIV: {
             VarIndex a = addClauses(vt, cnf, pf->data.operands[0]);
             VarIndex b = addClauses(vt, cnf, pf->data.operands[1]);
             VarIndex x = mkFreshVariable(vt);
-            addTernaryClause(vt, cnf, -x, -a, b);
-            addTernaryClause(vt, cnf, -x, -b, a);
-            addTernaryClause(vt, cnf, x, -a, -b);
-            addTernaryClause(vt, cnf, x, a, b);
+            addTernaryClause(vt, cnf, -x, -a, b);  // Ternary First
+            addTernaryClause(vt, cnf, -x, -b, a);  // Ternary Second
+            addTernaryClause(vt, cnf, x, -a, -b);  // Ternary Third
+            addTernaryClause(vt, cnf, x, a, b);    // Ternary Fourth
             return x;
         }
         case NOT: {
             VarIndex a = addClauses(vt, cnf, pf->data.single_op);
             VarIndex x = mkFreshVariable(vt);
-            addBinaryClause(vt, cnf, -x, -a);
-            addBinaryClause(vt, cnf, a, x);
+            addBinaryClause(vt, cnf, -x, -a);  // Binary Clause
+            addBinaryClause(vt, cnf, a, x);    // Binary Ckause
             return x;
         }
         default:
-            err("Weird case man");
+            err("Weird case man");  // Default Case
             break;
     }
 }

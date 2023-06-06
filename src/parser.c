@@ -33,7 +33,7 @@ FormulaKind toKind(const char* str) {
     } else if (strcmp(str, "<=>") == 0) {
         return EQUIV;
     } else {
-        for (int i = 0; i < strlen(str); i++)
+        for (long unsigned int i = 0; i < strlen(str); i++)
         /*if (!((str[i] >= 'A' && str[i] <= 'Z') ||
               (str[i] >= 'a' && str[i] <= 'z') ||
               (str[i] >= '0' && str[i] <= '9'))) {
