@@ -1,5 +1,6 @@
 #include "dpll.h"
 
+#include "cnf.h"
 #include "err.h"
 #include "list.h"
 #include "util.h"
@@ -61,12 +62,111 @@ void popAssignment(List* stack) {
  *                 0 if the algorithm should continue,
  *                -1 if the algorithm should terminate with UNSAT
  */
+
+void Backtrack(List* s, VarTable* vt) {
+    while (s->head != NULL) {
+        Assignment* topE = peek(s);
+        switch (topE->reason) {
+            case CHOSEN:  // CHOSEN CASE
+            {
+                updateVariableValue(vt, topE->var,
+                                    TRUE);  // update variable ->true
+                return;
+            }
+            case IMPLIED:  // IMPLIED CASE
+            {
+                updateVariableValue(vt, topE->var,
+                                    FALSE);  // false variable update
+                pop(s);
+                break;
+            }
+            default:
+                err("Something is definitely wrong");  // case where reason is
+                                                       // not IMPLIED/CHOSEN,
+                                                       // prolly won't execute
+                                                       // but default needed
+                break;
+        }
+    }
+}
+
 int iterate(VarTable* vt, List* stack, CNF* cnf) {
-    // TODO Implement me!
-    NOT_IMPLEMENTED;
-    UNUSED(vt);
-    UNUSED(stack);
-    UNUSED(cnf);
+    switch (evalCNF(cnf)) {
+        case TRUE: {
+            return 1;
+            break;
+        }
+        case FALSE: {
+            Assignment* topestack = peek(stack);
+            if (stack->head != NULL && topestack->reason == CHOSEN) {
+                Backtrack(stack, vt);
+            } else {
+                return -1;
+            }
+            break;
+        }
+        case UNDEFINED: {
+            // following code sort of sturcture comes from list.h, it was
+            // commented is being used here
+            ListIterator it = mkIterator(&cnf->clauses);
+            int flag = 0;
+            while (isValid(&it)) {
+                Clause* current = (Clause*)getCurr(&it);
+                Literal u_lit;
+                //= getUnitLiteral(vt, current);  // the unit gets lit ;)
+                if ((u_lit = getUnitLiteral(vt, current)) != 0) {
+                    // function
+                    // TruthValue u_litval = (u_lit > 0) ? TRUE : FALSE;
+                    // foo(current);}
+                    // unit literal checked for sign, that +ve or -ve
+                    TruthValue u_litval;
+                    if (u_lit > 0) {
+                        u_litval = TRUE;  // positive
+                    } else {
+                        u_litval = FALSE;  //-ve unit literal
+                    }
+
+                    // Variable Table is updated, absolute val is
+                    // used since we want just the absolute value and not the
+                    // sign
+                    updateVariableValue(vt, abs(u_lit), u_litval);
+
+                    // an entry in the assignment stack, we pushing the reason
+                    // and the truthvalue
+                    pushAssignment(stack, (u_lit), IMPLIED);  //
+
+                    flag++;
+                }
+                next(&it);
+            }
+
+            if (flag <= 0)  // absencde of unit clause
+            {
+                VarIndex unkown_variable = getNextUndefinedVariable(vt);
+
+                if (unkown_variable != 0) {
+                    updateVariableValue(vt, unkown_variable, TRUE);
+
+                    pushAssignment(stack, unkown_variable, CHOSEN);
+
+                    int continue_iterating = iterate(vt, stack, cnf);
+
+                    if (continue_iterating == 1) {
+                        return 1;
+                    }
+                }
+            }
+            break;
+        }
+
+        default: {
+            err("Default case, lololololololololol won't be exceuted "
+                "hahahahha");
+            break;
+        }
+    }
+
+    return 0;
 }
 
 char isSatisfiable(VarTable* vt, CNF* cnf) {
