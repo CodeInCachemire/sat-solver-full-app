@@ -103,6 +103,7 @@ int iterate(VarTable* vt, List* stack, CNF* cnf) {
             if (!isEmpty(stack)) {
                 // IF RESET IS POSSIBLE
                 Backtrack(stack, vt);
+                return 0;
 
             } else {
                 return -1;
