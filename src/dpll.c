@@ -64,19 +64,20 @@ void popAssignment(List* stack) {
  */
 
 void Backtrack(List* s, VarTable* vt) {
-    while (s->head != NULL) {
+    while (!isEmpty(s)) {
         Assignment* topE = peek(s);
         switch (topE->reason) {
             case CHOSEN:  // CHOSEN CASE
-            {
+            {             // to false, then the reason to false
                 updateVariableValue(vt, topE->var,
-                                    TRUE);  // update variable ->true
+                                    FALSE);  // update variable ->true
+                topE->reason = IMPLIED;
                 return;
             }
             case IMPLIED:  // IMPLIED CASE
             {
-                updateVariableValue(vt, topE->var,
-                                    FALSE);  // false variable update
+                // updateVariableValue(vt, topE->var, UNDEFINED);  // false
+                //  variable update
                 popAssignment(s);
                 break;
             }
@@ -97,9 +98,12 @@ int iterate(VarTable* vt, List* stack, CNF* cnf) {
             break;
         }
         case FALSE: {
-            Assignment* topestack = peek(stack);
-            if (stack->head != NULL && topestack->reason == CHOSEN) {
+            // Assignment* topestack = peek(stack);
+            //  if reset is possible
+            if (!isEmpty(stack)) {
+                // IF RESET IS POSSIBLE
                 Backtrack(stack, vt);
+
             } else {
                 return -1;
             }
@@ -125,13 +129,13 @@ int iterate(VarTable* vt, List* stack, CNF* cnf) {
                     }
 
                     // Variable Table is updated, absolute val is
-                    // used since we want just the absolute value and not the
-                    // sign
+                    // used since we want just the absolute value and not
+                    // the sign
                     updateVariableValue(vt, abs(u_lit), u_litval);
 
-                    // an entry in the assignment stack, we pushing the reason
-                    // and the truthvalue
-                    pushAssignment(stack, (u_lit), IMPLIED);  //
+                    // an entry in the assignment stack, we pushing the
+                    // reason and the truthvalue
+                    pushAssignment(stack, abs(u_lit), IMPLIED);  //
 
                     flag++;
                 }
@@ -158,7 +162,8 @@ int iterate(VarTable* vt, List* stack, CNF* cnf) {
         }
 
         default: {
-            err("Default case, lololololololololol won't be exceuted or maybe "
+            err("Default case, lololololololololol won't be exceuted or "
+                "maybe "
                 "will this is just default"
                 "hahahahha");
             break;
