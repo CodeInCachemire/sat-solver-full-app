@@ -33,13 +33,7 @@ FormulaKind toKind(const char* str) {
     } else if (strcmp(str, "<=>") == 0) {
         return EQUIV;
     } else {
-        for (long unsigned int i = 0; i < strlen(str); i++)
-        /*if (!((str[i] >= 'A' && str[i] <= 'Z') ||
-              (str[i] >= 'a' && str[i] <= 'z') ||
-              (str[i] >= '0' && str[i] <= '9'))) {
-            err("Not valid variable");*/
-
-        {
+        for (long unsigned int i = 0; i < strlen(str); i++) {
             if (!isalnum(str[i]))
                 err("Not valid variable");  // Not alphanumeric char
         }
@@ -58,17 +52,11 @@ int checkstack(List* s) {
 PropFormula* parseFormula(FILE* input, VarTable* vt) {
     List ls = mkList();  // Creating an empty list
 
-    /*if (input == NULL) {
-        err("No tokens provided");
-    }*/
-
     char* key;  // Initializing my key token
     int tokenCount = 0;
 
     while ((key = nextToken(input)) != NULL) {  // check if token not null
-        /*if (key == NULL) {
-            err("NO TOKEN PASSED");
-        }*/
+
         tokenCount++;
         FormulaKind kindForm = toKind(key);  // Sending kind variable to
 
@@ -87,28 +75,30 @@ PropFormula* parseFormula(FILE* input, VarTable* vt) {
                 PropFormula* uForm = mkUnaryFormula(kindForm, Op);
                 push(&ls, uForm);
             } else {
-                err("EmptyUnary");
+                err("Empty Unary Formula");
             }
 
         } else if (kindForm == AND || kindForm == OR || kindForm == EQUIV ||
-                   kindForm == IMPLIES) {
-            PropFormula* Rightop = peek(&ls);
+                   kindForm == IMPLIES) {  // double stack check has to be use
+                                           // for two operands
+            PropFormula* Rightop = peek(&ls);  // get values
 
-            int checkfirst = checkstack(&ls);
+            int checkfirst =
+                checkstack(&ls);  // checkingg if there exists a first operand
 
-            if (checkfirst == 1) {
-                pop(&ls);
+            if (checkfirst == 1) {  // operand exists
+                pop(&ls);           // pop operand
 
-                int checksecond = checkstack(&ls);
+                int checksecond = checkstack(&ls);  // check for second operand
 
-                if (checksecond == 1) {
-                    PropFormula* Leftop = peek(&ls);
-                    pop(&ls);
+                if (checksecond == 1) {               // check
+                    PropFormula* Leftop = peek(&ls);  // peek to get values
+                    pop(&ls);  // pop it to make spac ein stack
                     PropFormula* biForm =
                         mkBinaryFormula(kindForm, Leftop, Rightop);
                     push(&ls, biForm);
                 } else {
-                    err("Binary Problem");
+                    err("Binary Problems");
                 }
             }
         } else {
@@ -116,17 +106,26 @@ PropFormula* parseFormula(FILE* input, VarTable* vt) {
         }
     }
 
-    if (tokenCount == 0) {  // stack
+    if (tokenCount ==
+        0) {  // stack check to see if the while loop is entered, if count is> 0
+              // means tokens were valid and not empty
         err("No tokens passed");
     }
 
     PropFormula* result = (PropFormula*)peek(&ls);  // give the formula to
                                                     // result
     pop(&ls);
-    if (ls.head == NULL) {
+    if (ls.head ==
+        NULL) {  // check stack if empty, for exmple a b && c, stack would have
+                 // two elements and c would remain after pop
         return result;
     } else {
-        err("Stack is not empty there are variables, parsing fail");
+        err("Stack is not empty there are variables, parsing fail");  // errror
+                                                                      // case
+                                                                      // where
+                                                                      // stack
+                                                                      // isn't
+                                                                      // empyt
         return NULL;
     }
 }
