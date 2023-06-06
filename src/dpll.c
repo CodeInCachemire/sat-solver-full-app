@@ -77,7 +77,7 @@ void Backtrack(List* s, VarTable* vt) {
             {
                 updateVariableValue(vt, topE->var,
                                     FALSE);  // false variable update
-                pop(s);
+                popAssignment(s);
                 break;
             }
             default:
@@ -116,8 +116,6 @@ int iterate(VarTable* vt, List* stack, CNF* cnf) {
                 //= getUnitLiteral(vt, current);  // the unit gets lit ;)
                 if ((u_lit = getUnitLiteral(vt, current)) != 0) {
                     // function
-                    // TruthValue u_litval = (u_lit > 0) ? TRUE : FALSE;
-                    // foo(current);}
                     // unit literal checked for sign, that +ve or -ve
                     TruthValue u_litval;
                     if (u_lit > 0) {
@@ -160,7 +158,8 @@ int iterate(VarTable* vt, List* stack, CNF* cnf) {
         }
 
         default: {
-            err("Default case, lololololololololol won't be exceuted "
+            err("Default case, lololololololololol won't be exceuted or maybe "
+                "will this is just default"
                 "hahahahha");
             break;
         }
