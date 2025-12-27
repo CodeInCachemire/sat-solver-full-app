@@ -72,11 +72,12 @@ void Backtrack(List* s, VarTable* vt) {
                 updateVariableValue(vt, topE->var,
                                     FALSE);  // update variable ->true
                 topE->reason = IMPLIED;
+                popAssignment(s);
                 return;
             }
             case IMPLIED:  // IMPLIED CASE
             {
-                updateVariableValue(vt, topE->var, UNDEFINED);  // false
+                //updateVariableValue(vt, topE->var, UNDEFINED);  // false
                 //  variable update
                 popAssignment(s);
                 break;
@@ -100,10 +101,10 @@ int iterate(VarTable* vt, List* stack, CNF* cnf) {
         case FALSE: {
             Assignment* topestack = peek(stack);
             //  if reset is possible
-            if (!isEmpty(stack) && topestack == CHOSEN) {
+            if (!isEmpty(stack) /*&& topestack == CHOSEN*/) {
                 // IF RESET IS POSSIBLE
                 Backtrack(stack, vt);  // backtrack
-                // return 0;              // new iteration
+                return 0;              // new iteration
 
             } else {
                 return -1;  // UNSAT

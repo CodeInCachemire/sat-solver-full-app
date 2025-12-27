@@ -75,6 +75,7 @@ PropFormula* parseFormula(FILE* input, VarTable* vt) {
                 PropFormula* uForm = mkUnaryFormula(kindForm, Op);
                 push(&ls, uForm);
             } else {
+                free(key);
                 err("Empty Unary Formula");
             }
 
@@ -98,12 +99,15 @@ PropFormula* parseFormula(FILE* input, VarTable* vt) {
                         mkBinaryFormula(kindForm, Leftop, Rightop);
                     push(&ls, biForm);
                 } else {
+                    free(key);
                     err("Binary Problems");
                 }
             }
         } else {
+            free(key);
             err("Invalid token encountered");
         }
+        free(key);
     }
 
     if (tokenCount ==
