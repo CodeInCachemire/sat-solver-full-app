@@ -10,8 +10,11 @@ PropFormula* mkVarFormula(VarTable* vt, char* name) {
     PropFormula* res = (PropFormula*)malloc(sizeof(PropFormula));
 
     res->kind = VAR;
-    res->data.var = mkVariable(vt, name);
 
+    char* copy = (char*)malloc(strlen(name) + 1);
+    strcpy(copy, name);
+
+    res->data.var = mkVariable(vt, copy);
     return res;
 }
 
@@ -57,6 +60,7 @@ void freeFormula(PropFormula* pf) {
         default:
             break;
     }
+    free(pf);
 }
 
 void prettyPrintFormula_impl(FILE* f, VarTable* vt, PropFormula* pf) {
