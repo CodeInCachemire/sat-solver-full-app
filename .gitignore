@@ -1,0 +1,24 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environments
+venv/
+.venv/
+env/
+#c files
+*.o
+*.out
+*.a
+*.so
+*.exe
+*.elf
+*.debug.o
+
+# Build directories (common names)
+build/
+bin/
+
+# VS Code
+.vscode/
