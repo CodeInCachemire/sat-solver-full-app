@@ -72,15 +72,14 @@ void Backtrack(List* s, VarTable* vt) {
                 updateVariableValue(vt, topE->var,
                                     FALSE);  // update variable ->true
                 topE->reason = IMPLIED;
-                popAssignment(s);
                 return;
             }
             case IMPLIED:  // IMPLIED CASE
             {
-                //updateVariableValue(vt, topE->var, UNDEFINED);  // false
+                updateVariableValue(vt, topE->var, UNDEFINED);  // false
                 //  variable update
                 popAssignment(s);
-                break;
+                continue;
             }
             default:
                 err("Something is definitely wrong");  // case where reason is
@@ -91,7 +90,17 @@ void Backtrack(List* s, VarTable* vt) {
         }
     }
 }
-
+static char hasChosen(List* s) {
+    ListIterator it = mkIterator(s);
+    while (isValid(&it)) {
+        Assignment* a = (Assignment*)getCurr(&it);
+        if (a->reason == CHOSEN) {
+            return 1;
+        }
+        next(&it);
+    }
+    return 0;
+}
 int iterate(VarTable* vt, List* stack, CNF* cnf) {
     switch (evalCNF(cnf)) {
         case TRUE: {
@@ -99,23 +108,18 @@ int iterate(VarTable* vt, List* stack, CNF* cnf) {
             break;
         }
         case FALSE: {
-            Assignment* topestack = peek(stack);
             //  if reset is possible
-            if (!isEmpty(stack) /*&& topestack == CHOSEN*/) {
-                // IF RESET IS POSSIBLE
-                Backtrack(stack, vt);  // backtrack
-                return 0;              // new iteration
-
+            if (hasChosen(stack)) {
+                Backtrack(stack, vt);
+                return 0;
             } else {
-                return -1;  // UNSAT
+                return -1;
             }
-            break;
         }
-        case UNDEFINED: {
+        default: {
             // following code sort of sturcture comes from list.h, it was
             // commented is being used here
             ListIterator it = mkIterator(&cnf->clauses);
-            int flag = 0;
             while (isValid(&it)) {
                 Clause* current = (Clause*)getCurr(&it);
                 Literal u_lit;
@@ -138,40 +142,23 @@ int iterate(VarTable* vt, List* stack, CNF* cnf) {
                     // an entry in the assignment stack, we pushing the
                     // reason and the truthvalue
                     pushAssignment(stack, abs(u_lit), IMPLIED);  //
-
-                    flag++;
+                    return 0;
                 }
                 next(&it);
             }
 
-            if (flag <= 0)  // absencde of unit clause
-            {
-                VarIndex unkown_variable = getNextUndefinedVariable(vt);
+            VarIndex unkown_variable = getNextUndefinedVariable(vt);
 
-                if (unkown_variable != 0) {
-                    updateVariableValue(vt, unkown_variable, TRUE);
+            if (unkown_variable != 0) {
+                updateVariableValue(vt, unkown_variable, TRUE);
 
-                    pushAssignment(stack, unkown_variable, CHOSEN);
+                pushAssignment(stack, unkown_variable, CHOSEN);
 
-                    int continue_iterating = iterate(vt, stack, cnf);
-
-                    if (continue_iterating == 1) {
-                        return 1;
-                    }
-                }
+                return 0;
             }
-            break;
-        }
-
-        default: {
-            err("Default case, lololololololololol won't be exceuted or "
-                "maybe "
-                "will this is just default"
-                "hahahahha");
-            break;
+            return 0;
         }
     }
-
     return 0;
 }
 
