@@ -10,11 +10,8 @@ PropFormula* mkVarFormula(VarTable* vt, char* name) {
     PropFormula* res = (PropFormula*)malloc(sizeof(PropFormula));
 
     res->kind = VAR;
+    res->data.var = mkVariable(vt, name);
 
-    char* copy = (char*)malloc(strlen(name) + 1);
-    strcpy(copy, name);
-
-    res->data.var = mkVariable(vt, copy);
     return res;
 }
 
