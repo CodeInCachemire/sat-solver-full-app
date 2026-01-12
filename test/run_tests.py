@@ -152,8 +152,8 @@ def main():
     args = parser.parse_args()
 
     try:
-        from test_registry import all_tests
-        from test_registry import timeout_secs
+        from _test_registry import all_tests
+        from _test_registry import timeout_secs
     except ImportError:
         print("No test_registry.py found!")
         sys.exit(1)

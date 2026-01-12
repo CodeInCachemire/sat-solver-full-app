@@ -1,6 +1,8 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
+#include "cnf_parser.h"
 #include "dpll.h"
 #include "parser.h"
 #include "propformula.h"
@@ -12,6 +14,7 @@ void printUsage(char* bin) {
         "Usage: %s [options] [file]\n\n"
         "If no file is specified, input from stdin is expected.\n\n"
         "Options:\n"
+        "  --cnf              Read CNF directly (fast mode)\n"
         "  -v, --verbose       Print additional data.\n"
         "  -p, --printformula  Only parse the propositional formula and print "
         "it.\n"
@@ -28,9 +31,12 @@ int main(int argc, char* argv[]) {
     char verbose = 0;
     char formula_only = 0;
     char cnf_only = 0;
+    char cnf_mode = 0;
 
     for (int i = 1; i < argc; i++) {
-        if (argv[i][0] == '-') {
+        if (strcmp(argv[i], "--cnf") == 0) {
+            cnf_mode = 1;
+        } else if (argv[i][0] == '-') {
             switch (argv[i][1]) {
                 case 'v':
                     verbose = 1;
@@ -78,37 +84,45 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    // Check options and flags for mode selection
     VarTable* vt = mkVarTable();
+    CNF* cnf = NULL;
+    PropFormula* pf = NULL;
 
-    PropFormula* pf = parseFormula(input, vt);
+    if (cnf_mode) {
+        cnf = parseCNF(input, vt);
+    } else {
+        pf = parseFormula(input, vt);
 
-    if (formula_only) {
-        fprintf(stderr, "propositional formula:\n  ");
-        prettyPrintFormulaEval(vt, pf);
-        fprintf(stderr, "\n");
+        if (formula_only) {
+            printf("Propositional formula:\n  ");
+            prettyPrintFormula(vt, pf);
+            printf("\n");
 
-        freeFormula(pf);
-        pf = NULL;
+            freeFormula(pf);
+            pf = NULL;
 
-        freeVarTable(vt);
+            freeVarTable(vt);
 
-        if (input != stdin) {
-            fclose(input);
+            if (input != stdin) {
+                fclose(input);
+            }
+
+            return 0;
         }
 
-        return 0;
+        cnf = getCNF(vt, pf);
     }
 
-    if (verbose) {
-        printf("propositional formula:\n  ");
-        prettyPrintFormulaEval(vt, pf);
+    // PRINTING VERBOSE OR CNF ONLY
+    if (verbose && !cnf_mode) {
+        printf("Propositional formula:\n  ");
+        prettyPrintFormula(vt, pf);
         printf("\n\n");
     }
 
-    CNF* cnf = getCNF(vt, pf);
-
     if (cnf_only) {
-        fprintf(stderr, "conjunctive normal form:\n  ");
+        printf("Conjunctive Normal Form:\n  ");
         prettyPrintCNF(vt, cnf);
 
         freeFormula(pf);
@@ -127,19 +141,20 @@ int main(int argc, char* argv[]) {
     }
 
     if (verbose) {
-        printf("conjunctive normal form:\n  ");
+        printf("Conjunctive Normal Form:\n  ");
         prettyPrintCNF(vt, cnf);
+
         printf("\n");
     }
 
     char sat = 0;
 
     if (isSatisfiable(vt, cnf)) {
-        fprintf(stderr, "sat with assignment:\n");
+        printf("SAT: Assignment is\n");
         printSatisfyingAssignmentEval(vt);
         sat = 1;
     } else {
-        fprintf(stderr, "unsat\n");
+        printf("UNSAT\n");
         sat = 0;
     }
 
