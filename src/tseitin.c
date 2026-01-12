@@ -110,7 +110,7 @@ VarIndex addClauses(VarTable* vt, CNF* cnf, const PropFormula* pf) {
             return x;
         }
         default:
-            err("Weird case man");  // Default Case
+            err("Default case");  // Default Case
             break;
     }
 }

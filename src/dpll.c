@@ -82,10 +82,12 @@ void Backtrack(List* s, VarTable* vt) {
                 continue;
             }
             default:
-                err("Something is definitely wrong");  // case where reason is
-                                                       // not IMPLIED/CHOSEN,
-                                                       // prolly won't execute
-                                                       // but default needed
+                err("Backtrack algorithm, default case");  // case where reason
+                                                            // is not
+                                                            // IMPLIED/CHOSEN,
+                                                            // prolly won't
+                                                            // execute but
+                                                            // default needed
                 break;
         }
     }

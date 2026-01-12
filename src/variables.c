@@ -204,7 +204,7 @@ void printSatisfyingAssignmentEval(VarTable* vt) {
     qsort(buf, vt->size, sizeof(Variable), var_cmp);
 
     char first = 1;
-    fprintf(stderr, "  ");
+    printf("  ");
     for (unsigned i = 0; i < vt->size; i++) {
         Variable* current = buf + i;
 
@@ -214,7 +214,7 @@ void printSatisfyingAssignmentEval(VarTable* vt) {
         }
 
         if (!first) {
-            fprintf(stderr, "\n  ");
+            printf("\n  ");
         }
 
         const char* val = NULL;
@@ -230,10 +230,10 @@ void printSatisfyingAssignmentEval(VarTable* vt) {
                 break;
         }
 
-        fprintf(stderr, "%s -> %s", current->name, val);
+        printf("%s -> %s", current->name, val);
 
         first = 0;
     }
-    fprintf(stderr, "\n");
+    printf("\n");
     free(buf);
 }

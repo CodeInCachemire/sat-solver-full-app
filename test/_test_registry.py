@@ -109,13 +109,13 @@ def test_solver(tu, test_name):
             if os.path.isfile(ref_name):
                 with open(ref_name, 'r') as ref_file:
                     ref_str = ref_file.read()
-                    if err == ref_str:
+                    if out == ref_str:
                         return tu.SUCCESS()
                     else:
-                        msg = 'expected in stderr:\n'
+                        msg = 'expected in stdout:\n'
                         msg += ref_str + '\n'
                         msg += 'but got:\n'
-                        msg += err + '\n'
+                        msg += out + '\n'
                         return tu.FAILURE('incorrect model\n'+ msg)
             else:
                 return tu.SUCCESS()
@@ -146,7 +146,7 @@ def test_parser(tu, test_name):
         if rc == 0:
             ref = tu.join_base('test/ref_output/parser/' + cat + '_' + case + '.ref')
             with open(ref, 'r') as ref_file:
-                if err == ref_file.read():
+                if out == ref_file.read():
                     return tu.SUCCESS()
                 else:
                     return tu.FAILURE('incorrect formula\n')

@@ -1,8 +1,8 @@
 BIN_NAME    := satsolver
 TESTER_NAME := testrunner
 
-BIN_FILES    := src/main.c src/cnf.c src/dpll.c src/err.c src/lexer.c src/list.c src/parser.c src/propformula.c src/tseitin.c src/variables.c
-TESTER_FILES := src/unit_tests.c src/test_main.c src/cnf.c src/dpll.c src/err.c src/lexer.c src/list.c src/parser.c src/propformula.c src/tseitin.c src/variables.c
+BIN_FILES    := src/main.c src/cnf.c src/dpll.c src/err.c src/lexer.c src/list.c src/parser.c src/propformula.c src/tseitin.c src/variables.c src/cnf_parser.c
+TESTER_FILES := src/unit_tests.c src/test_main.c src/cnf.c src/dpll.c src/err.c src/lexer.c src/list.c src/parser.c src/propformula.c src/tseitin.c src/variables.c src/cnf_parser.c
 HEADERS      := $(wildcard src/*.h)
 
 TEST_SCRIPT := test/run_tests.py

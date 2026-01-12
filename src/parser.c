@@ -19,7 +19,7 @@
  */
 FormulaKind toKind(const char* str) {
     if (str == NULL || *str == '\0') {
-        err("Empty string detected");
+        err("Parsing: Empty string detected");
     }
 
     if (strcmp(str, "!") == 0) {
@@ -35,7 +35,7 @@ FormulaKind toKind(const char* str) {
     } else {
         for (long unsigned int i = 0; i < strlen(str); i++) {
             if (!isalnum(str[i]))
-                err("Not valid variable");  // Not alphanumeric char
+                err("Parsing:Not valid variable");  // Not alphanumeric char
         }
         return VAR;  // All characters are alphanumeric
     }
@@ -77,7 +77,7 @@ PropFormula* parseFormula(FILE* input, VarTable* vt) {
                 free(key);
             } else {
                 free(key);
-                err("Empty Unary Formula");
+                err("Parsing:Empty Unary Formula");
             }
 
         } else if (kindForm == AND || kindForm == OR || kindForm == EQUIV ||
@@ -102,19 +102,19 @@ PropFormula* parseFormula(FILE* input, VarTable* vt) {
                     free(key);
                 } else {
                     free(key);
-                    err("Binary Problems");
+                    err("Parsing: Binary Problems");
                 }
             }
         } else {
             free(key);
-            err("Invalid token encountered");
+            err("Parsing: Invalid token encountered");
         }
     }
 
     if (tokenCount ==
         0) {  // stack check to see if the while loop is entered, if count is> 0
               // means tokens were valid and not empty
-        err("No tokens passed");
+        err("Parsing: No tokens passed");
     }
 
     PropFormula* result = (PropFormula*)peek(&ls);  // give the formula to
@@ -125,12 +125,13 @@ PropFormula* parseFormula(FILE* input, VarTable* vt) {
                  // two elements and c would remain after pop
         return result;
     } else {
-        err("Stack is not empty there are variables, parsing fail");  // errror
-                                                                      // case
-                                                                      // where
-                                                                      // stack
-                                                                      // isn't
-                                                                      // empyt
+        err("Parsing: Stack is not empty there are variables left, formula is not of "
+            "correct format");  // errror
+                                // case
+                                // where
+                                // stack
+                                // isn't
+                                // empyt
         return NULL;
     }
 }
