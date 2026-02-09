@@ -4,7 +4,8 @@ from pydantic import BaseModel, Field, field_validator
 
 MAX_FORMULA_LENGTH = 300_000
 MAX_TOKENS = 85_000
-class SolveResponseCached(BaseModel):
+
+class SolveRequest(BaseModel):
     mode : str = Field(
         ...,
         description="Operation mode: CNF or RPN",
@@ -32,14 +33,16 @@ class SolveResponseCached(BaseModel):
             raise ValueError('Notation needs to be in RPN.')
         return notation
     
-class SolveResponseCached(BaseModel):
+class SolveResponseCached(BaseModel): #sync
     msg: str
     formula: str
     result: str
+    assignment : Optional[Dict[str,bool]]
     return_code: int
     cached: bool
+    runtime: float
 
-class SolveResponseFresh(BaseModel):
+class SolveResponseFresh(BaseModel): #sync
     msg: str
     formula : str
     result : str
@@ -48,7 +51,7 @@ class SolveResponseFresh(BaseModel):
     runtime : float
     cached : bool
 
-class HistoryEntry(BaseModel):
+class HistoryEntry(BaseModel): #sync and async
     id: int
     formula: str
     formula_hash: str
@@ -56,5 +59,35 @@ class HistoryEntry(BaseModel):
     return_code: int
     runtime: float
 
-class HistoryResponse(BaseModel):
+class HistoryResponse(BaseModel): #sync and #async
     entries: list[HistoryEntry]
+    
+class JobSubmitResponse(BaseModel):
+    msg: str
+    formula: str
+    formula_id: int
+    run_id : int
+    status: str
+
+class JobSubmitRequest(BaseModel):
+    formula: str = Field(..., description="Formula in RPN notation", min_length=1)
+    notation: str = Field(default="RPN", description="Notation format")
+    mode: str = Field(default="RPN", description="Solver mode")
+
+class StatusSchema(BaseModel):
+    msg: str
+    run_id: int
+    status: str
+
+class SolverResult(BaseModel): 
+    msg: str
+    status: str
+    run_id: int
+    formula_id : int 
+    formula : str
+    result : str
+    assignment : Optional[Dict[str,bool]]
+    runtime : float
+
+    
+    

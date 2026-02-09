@@ -1,5 +1,5 @@
 import hashlib
-
+from backend.app.core.constants import ALLOWED_OPERATORS
 from fastapi import HTTPException
 def normalize_and_hash(formula_raw: str, notation: str) -> tuple[str, str]:
     #notation is not RPN
@@ -17,7 +17,12 @@ def normalize_and_hash(formula_raw: str, notation: str) -> tuple[str, str]:
 def normalize_rpn(formula_raw: str) -> str:
     # Collapse all whitespace to single spaces
     tokens = formula_raw.split()
-
+    normalized_tokens = []
+    for token in tokens:
+        if token.isalnum() or token in ALLOWED_OPERATORS:
+            normalized_tokens.append(token)
+        else:
+            raise ValueError(f"Unallowed symbols or operators.")
     return " ".join(tokens)
 
 MAX_FORMULA_LENGTH = 300_000

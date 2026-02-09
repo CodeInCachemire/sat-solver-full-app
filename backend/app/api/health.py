@@ -2,11 +2,34 @@ from fastapi import APIRouter, HTTPException, status
 from pathlib import Path
 import os
 from backend.app.db import session
+from backend.app.redis.redis_session import check_redis_connectivity
+
 health_router = APIRouter()
 
 @health_router.get("/health", status_code=status.HTTP_200_OK) #liveness check
 def get_health():
-    return {"status" : "ok" }
+    """Health check endpoint that verifies database and Redis connectivity."""
+    db_status = "connected"
+    redis_status = "connected"
+    
+    # Check database connectivity
+    try:
+        session.check_db_connectivity()
+    except Exception:
+        db_status = "disconnected"
+    
+    # Check Redis connectivity
+    try:
+        if not check_redis_connectivity():
+            redis_status = "disconnected"
+    except Exception:
+        redis_status = "disconnected"
+    
+    return {
+        "status": "ok",
+        "database": db_status,
+        "redis": redis_status
+    }
 
 @health_router.get("/ready") #readiness check
 def get_readiness():

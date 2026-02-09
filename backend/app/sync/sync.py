@@ -7,13 +7,13 @@ from typing import Tuple, Union
 from fastapi import APIRouter, Body, HTTPException, status
 
 from backend.app.utils.formula import normalize_and_hash
-from backend.app.db.syncdb import (
+from backend.app.sync.syncdb import (
     get_result_by_hash,
     insert_result,
     get_results,
 )
 
-from backend.app.schemas.schema import (
+from backend.app.schemas.job import (
     SolveResponseCached,
     SolveResponseFresh,
     HistoryEntry,
@@ -34,7 +34,7 @@ sync_router = APIRouter(prefix="/sync", tags=["sync-solver"])
 
 
 @sync_router.post("/solve_sync", response_model=Union[SolveResponseFresh,SolveResponseCached])
-def run_sync_solver(mode: str, notation: str, formula: str = Body(..., media_type="text/plain")):
+def run_sync_solver(formula: str = Body(..., media_type="text/plain")):
     try:
         normalized_rpn, normalized_hash = normalize_and_hash(formula, "RPN")
     except ValueError as e:
@@ -47,12 +47,15 @@ def run_sync_solver(mode: str, notation: str, formula: str = Body(..., media_typ
     db_result = get_result_by_hash(normalized_hash)
     
     if db_result is not None and db_result["rc"] in {RETURN_CODE_SAT, RETURN_CODE_UNSAT}:
+        result, assignment = parse_solver_output(db_result["result"])
         return SolveResponseCached(
             msg="Formula already solved (cached).",
             formula=normalized_rpn,
-            result=db_result["result"],
+            result=result,
+            assignment=assignment,
             return_code=db_result["rc"],
             cached=True,
+            runtime= db_result["rt"]
         )
     
     # Solve formula

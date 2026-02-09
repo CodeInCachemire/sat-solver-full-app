@@ -7,6 +7,12 @@ __pycache__/
 venv/
 .venv/
 env/
+.env
+
+plans/
+tests_new/
+python_scripts/
+
 #c files
 *.o
 *.out
@@ -19,6 +25,11 @@ env/
 # Build directories (common names)
 build/
 bin/
-
+.env.dev
+.env.prod
+.env.test
 # VS Code
 .vscode/
+start_api.sh
+start_worker.sh
+start_frontend.sh

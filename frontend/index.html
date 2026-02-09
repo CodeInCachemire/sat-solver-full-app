@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAT Solver Terminal</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-text">
+                <span class="blink">█</span> SAT SOLVER TERMINAL v1.0
+            </div>
+            <div class="header-info">
+                <span id="connection-status" class="status-connected">● CONNECTED</span>
+                <span id="current-time"></span>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- Left Panel: Job Submission -->
+            <div class="panel left-panel">
+                <div class="panel-header">
+                    <span class="panel-title">[ JOB SUBMISSION ]</span>
+                </div>
+                <div class="terminal-output" id="submit-output">
+                    <div class="output-line">Welcome to SAT Solver Terminal</div>
+                    <div class="output-line">Type 'help' for available commands</div>
+                    <div class="output-line">─────────────────────────────────────</div>
+                </div>
+                <div class="input-container">
+                    <span class="prompt">solver@terminal:~$</span>
+                    <input type="text" id="submit-input" class="terminal-input" autocomplete="off" autofocus>
+                </div>
+            </div>
+
+            <!-- Right Panel: Job Status -->
+            <div class="panel right-panel">
+                <div class="panel-header">
+                    <span class="panel-title">[ JOB STATUS ]</span>
+                </div>
+                <div class="terminal-output" id="status-output">
+                    <div class="output-line">Ready to check job status</div>
+                    <div class="output-line">Type 'status &lt;run_id&gt;' to check</div>
+                    <div class="output-line">Type 'result &lt;run_id&gt;' to get results</div>
+                    <div class="output-line">─────────────────────────────────────</div>
+                </div>
+                <div class="input-container">
+                    <span class="prompt">status@terminal:~$</span>
+                    <input type="text" id="status-input" class="terminal-input" autocomplete="off">
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div class="footer-info">
+                <span>Press TAB to switch panels | ESC to clear | Type 'help' for commands</span>
+            </div>
+        </footer>
+    </div>
+
+    <script src="terminal.js"></script>
+</body>
+
+</html>
